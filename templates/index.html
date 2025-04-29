@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invitation Reviewer - Powered by Claude AI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        .error {
+            background-color: #ffebee;
+            color: #c62828;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .response {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 20px;
+            margin-top: 30px;
+            white-space: pre-wrap;
+        }
+        .loading {
+            text-align: center;
+            margin: 20px 0;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Invitation Reviewer</h1>
+    <p>Paste your draft invitation below and get AI-powered suggestions for improvement.</p>
+    
+    {% if error %}
+    <div class="error">
+        {{ error }}
+    </div>
+    {% endif %}
+    
+    <form method="POST" action="/" id="invitation-form">
+        <div class="form-group">
+            <label for="draft_invitation">Draft Invitation:</label>
+            <textarea id="draft_invitation" name="draft_invitation" required>{{ draft or '' }}</textarea>
+        </div>
+        
+        <button type="submit" class="button" id="submit-btn">Analyze with Claude AI</button>
+    </form>
+    
+    <div class="loading" id="loading">
+        <p>Analyzing your invitation... This may take a few seconds.</p>
+    </div>
+    
+    {% if response %}
+    <div class="response">
+        <h2>Claude AI Suggestions:</h2>
+        {{ response|safe }}
+    </div>
+    {% endif %}
+    
+    <script>
+        // Show loading indicator when form is submitted
+        document.getElementById('invitation-form').addEventListener('submit', function() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('submit-btn').disabled = true;
+        });
+    </script>
+</body>
+</html>
