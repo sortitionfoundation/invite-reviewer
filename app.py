@@ -34,7 +34,13 @@ as possible and the public services will have the highest possible engagement wi
 You follow all the best practice for British English.
 
 You have been given invite materials for a citizens' assembly to review and improve on.
-Produce your recommendations by showing a snippet of the original text and then showing your suggestion. Also give the reasons for the suggested change.
+Produce your recommendations by showing a snippet of the original text and then showing your suggestion and then
+give the reasons for the suggested change.
+The original, suggestion and reasons make up a section.
+
+Your output should be formatted as markdown.
+The original text and suggestion should be quoted blocks.
+There should be a horizontal line between each section.
 """
 
 
@@ -44,7 +50,7 @@ def index():
     return render_template("index.html")
 
 
-def call_claude_api(text_content) -> tuple[bool, str]:
+def call_claude_api(text_content) -> tuple[bool, str, str]:
     """
     Call the Claude AI API with the provided text content.
 
@@ -58,7 +64,7 @@ def call_claude_api(text_content) -> tuple[bool, str]:
     """
     # Check for API key
     if not ANTHROPIC_API_KEY:
-        return False, "API key not configured. Set the ANTHROPIC_API_KEY environment variable or in a .env file."
+        return False, "API key not configured. Set the ANTHROPIC_API_KEY environment variable or in a .env file.", ""
 
     client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
@@ -81,30 +87,31 @@ def call_claude_api(text_content) -> tuple[bool, str]:
             ]
         )
 
-        return True, result_to_html(message.content)
+        html, raw_text = result_to_html(message.content)
+        return True, html, raw_text
     except anthropic.APIConnectionError as e:
         msg = f"The server could not be reached: {e.__cause__}"
-        return False, msg
+        return False, msg, ""
     except anthropic.RateLimitError as e:
         msg = "A 429 status code was received; we should back off a bit."
-        return False, msg
+        return False, msg, ""
     except anthropic.APIStatusError as e:
         msg = "Another non-200-range status code was received. Code {e.status_code}, Response: {e.response}"
-        return False, msg
+        return False, msg, ""
     except Exception as e:
-        return False, f"Error: {str(e)}"
+        return False, f"Error: {str(e)}", ""
 
 
-def result_to_html(result: list[anthropic.types.TextBlock]) -> str:
+def result_to_html(result: list[anthropic.types.TextBlock]) -> tuple[str, str]:
     if len(result) != 1 or not hasattr(result[0], "text"):
-        return str(result)
+        return str(result), ""
     # try to convert the response from markdown to HTML
     try:
-        return markdown2.markdown(result[0].text)
+        return markdown2.markdown(result[0].text), result[0].text
     except Exception as e:
         # if it isn't markdown, just leave it raw
         print(f"failed to convert markdown, {e}")
-        return str(result)
+        return str(result), ""
 
 
 @app.route("/", methods=["POST"])
@@ -117,12 +124,12 @@ def process_invitation():
         return render_template("index.html", error="Please enter a draft invitation.")
 
     # Call Claude API
-    success, result = call_claude_api(draft_invitation)
+    success, result, raw_text = call_claude_api(draft_invitation)
 
     if success:
-        return render_template("index.html", response=result, draft=draft_invitation)
+        return render_template("index.html", response=result, draft=draft_invitation, raw_text=raw_text)
     else:
-        return render_template("index.html", error=result, draft=draft_invitation)
+        return render_template("index.html", error=result, draft=draft_invitation, raw_text=raw_text)
 
 
 if __name__ == "__main__":
