@@ -75,7 +75,7 @@
     </div>
     {% endif %}
     
-    <form method="POST" action="/" id="invitation-form">
+    <form method="POST" action="{{ url_for('index') }}" id="invitation-form">
         <div class="form-group">
             <label for="draft_invitation">Draft Invitation:</label>
             <textarea id="draft_invitation" name="draft_invitation" required>{{ draft or '' }}</textarea>
@@ -85,7 +85,7 @@
     </form>
     
     <div class="loading" id="loading">
-        <p>Analyzing your invitation... This may take a few seconds.</p>
+        <p>Analyzing your invitation... This may take anywhere from a few seconds to a minute.</p>
     </div>
     
     {% if response %}
