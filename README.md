@@ -16,39 +16,44 @@ A simple Flask application that uses Anthropic's Claude AI to review and improve
 ## Installation
 
 1. Clone this repository:
+
    ```
    git clone https://github.com/yourusername/invitation-reviewer.git
    cd invitation-reviewer
    ```
 
 2. Create a virtual environment and activate it:
+
    ```
    python -m venv venv
-   
+
    # On Windows
    venv\Scripts\activate
-   
+
    # On macOS/Linux
    source venv/bin/activate
    ```
 
 3. Install the required packages:
+
    ```
    pip install -r requirements.txt
    ```
 
 4. Set your Anthropic API key by either:
-   
+
    a) Creating a `.env` file in the project root with the following content:
+
    ```
    ANTHROPIC_API_KEY=your-api-key-here
    ```
-   
+
    b) Setting it as an environment variable:
+
    ```
    # On Windows
    set ANTHROPIC_API_KEY=your-api-key-here
-   
+
    # On macOS/Linux
    export ANTHROPIC_API_KEY=your-api-key-here
    ```
@@ -68,12 +73,30 @@ invitation-reviewer/
 
 ## Running the Application
 
+### Directly in the shell
+
 1. Make sure you have set your Anthropic API key as described in the Installation section.
 
 2. Run the Flask application:
+
    ```
    python app.py
    ```
+
+3. Open your web browser and navigate to `http://127.0.0.1:5000/`
+
+4. Paste your draft invitation into the form and click "Analyze with Claude AI" to receive suggestions for improvement.
+
+### Using docker
+
+1. Make sure you have set your Anthropic API key as described in the Installation section.
+
+2. Build and run the docker container:
+
+```sh
+docker build . -t invite-review
+docker run -p 5000:5000 invite-review
+```
 
 3. Open your web browser and navigate to `http://127.0.0.1:5000/`
 
